@@ -1,0 +1,150 @@
+#main {
+	width: 100%;
+	height: 100%;
+	font-size: 4em;
+}
+
+#header {
+	height: 20%;
+}
+
+#dealer,
+#chars {
+	height: 30%;	
+	margin: auto;
+}
+
+#dealer,
+#chars > div {
+	width: 50%;
+}
+
+#chars .hp {
+	text-align: center;
+	width: 100%;
+}
+
+#char2 {
+	float: right;
+}
+
+/*.name:before {
+	content: "Name: ";
+}*/
+
+.hp:before {
+	content: "HP: ";
+}
+
+.hp > span:last-child:before {
+	content: " / ";
+}
+
+.hp,
+.sum {
+	display: none;
+}
+
+.sum:before {
+	content: "Sum: ";
+}
+
+#inputs {
+	text-align: center;
+}
+
+input {
+	font-size: 1.5em;
+	width: 40%;
+}
+
+div {
+	border: 0px black solid;
+}
+
+.name.bust {
+	background-color: darkred;
+	color: white;
+}
+
+.name.win {
+	background-color: lightgreen;
+}
+
+.name.push {
+	background-color: lightgray;
+}
+
+.name.lose {
+	background-color: red;
+}
+
+.state-start #chars .cards > div:last-child, 
+.state-char1 #char1 .name,
+.state-char2 #char2 .name {
+	background-color: yellow;
+}
+
+#inputs > div {
+	display: none;
+}
+
+.state-start #inputs > div.start {
+	display: block;
+}
+
+.state-char1 #inputs > div.turn,
+.state-char2 #inputs > div.turn {
+	display: block;
+}
+
+.state-dealer #inputs > div.end,
+.state-end #inputs > div.end {
+	display: block;
+}
+
+.cards {
+	min-height: 225px;
+}
+
+.cards > div {
+	border: 1px black solid;
+	display: inline-block;
+	margin: 5px;
+	height: 100px;
+	width: 100px;
+}
+
+.cards > div.hidden {
+	background-color: lightgray;
+}
+
+.cards > div.hidden > span {
+	visibility: hidden;
+}
+
+/* https://unicodelookup.com/#heart/1 */
+
+.cards > div > span[data-suite="1"]:before {
+	margin: 2px;
+	content: '\2665';
+	color: red;
+}
+
+.cards > div > span[data-suite="2"]:before {
+	margin: 2px;
+	content: '\2666';
+	color: red;
+}
+
+.cards > div > span[data-suite="3"]:before {
+	margin: 2px;
+	content: '\2660';
+	color: black;
+}
+
+.cards > div > span[data-suite="4"]:before {
+	margin: 2px;
+	content: '\2663';
+	color: black;
+}
