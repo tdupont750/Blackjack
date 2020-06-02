@@ -132,18 +132,21 @@
 				self.main.classList.add('state-start');
 				self.state = State.Start;
 				dealAll();
+				tryAutoAdvanceSwitch();
 				break;
 				
 			case State.Start:
 				self.main.classList.remove('state-start');
 				self.main.classList.add('state-char1');
 				self.state = State.Char1;
+				tryAutoAdvanceTurn(self.char1.hand);
 				break;
 				
 			case State.Char1:
 				self.main.classList.remove('state-char1');
 				self.main.classList.add('state-char2');
 				self.state = State.Char2;
+				tryAutoAdvanceTurn(self.char2.hand);
 				break;
 				
 			case State.Char2:
@@ -162,6 +165,21 @@
 			
 			default:
 				throw 'Invalid State';
+		}
+	
+		function tryAutoAdvanceSwitch() {
+			if (self.char1.hand.cards[0].card.equality === self.char2.hand.cards[0].card.equality ||
+				self.char1.hand.cards[1].card.equality === self.char2.hand.cards[1].card.equality) {
+				advanceTurn();
+			}
+			
+		}
+	
+		function tryAutoAdvanceTurn(hand) {
+			let sum = sumHand(hand, true);
+			if (sum >= 20) {
+				advanceTurn();
+			}
 		}
 	}
 	
@@ -239,40 +257,49 @@
 	}
 	
 	function sumHand(hand, readOnly) {
-		let total = 0;
-		let visible = 0;
-		let hiding = false;
+		let total = sumHandWithVisiblity(true);
 		
-		for(let i=0; i<hand.cards.length; i++) {
-			let card = hand.cards[i].card;
-			let value = card.value;
-			
-			if (card.altValue && total + card.value > 21) {
-				value = card.altValue;
-			}
-			
-			total += value;
-			
-			if (hand.cards[i].hide) {
-				hiding = true;
-			}  else {
-				visible += value;
-			}
+		if (readOnly === true) {
+			return total;
 		}
 		
-		if (readOnly !== true) {
-			let txt = visible.toString();
-			if (hiding) {
-				txt = '> ' + txt;
-			}
-			if (visible > 21) {
-				txt += ' BUST';
-				hand.nameEl.classList.add('bust');
-			}
-			hand.sum.innerText = txt;
+		let visible = sumHandWithVisiblity(false);
+		let txt = visible.toString();
+		
+		if (total !== visible) {
+			txt = '> ' + txt;
 		}
 		
+		if (visible > 21) {
+			txt += ' BUST';
+			hand.nameEl.classList.add('bust');
+		}
+		
+		hand.sum.innerText = txt;
 		return total;
+		
+		function sumHandWithVisiblity(showAll) {
+			let sum = 0;
+			let addTen = false;
+			
+			for(let i=0; i<hand.cards.length; i++) {
+				let card = hand.cards[i].card;
+				
+				if (showAll || hand.cards[i].hide !== true) {
+					if (card.equality === 11) {
+						addTen = true;
+					}
+				
+					sum += card.value;
+				}
+			}
+			
+			if (addTen && sum <= 11) {
+				sum += 10;
+			}
+			
+			return sum;
+		}
 	}
 	
 	// https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
@@ -291,7 +318,8 @@
 						suite: s,
 						name: NumNames[c],
 						abrv: c.toString(),
-						value: c
+						value: c,
+						equality: c
 					});
 				}
 				a.push({
@@ -299,25 +327,28 @@
 					name: 'Jack',
 					abrv: 'J',
 					value: 10,
+					equality: 10
 				});
 				a.push({
 					suite: s,
 					name: 'Queen',
 					abrv: 'Q',
 					value: 10,
+					equality: 10
 				});
 				a.push({
 					suite: s,
 					name: 'King',
 					abrv: 'K',
 					value: 10,
+					equality: 10
 				});
 				a.push({
 					suite: s,
 					name: 'Ace',
 					abrv: 'A',
-					value: 11,
-					altValue: 1
+					value: 1,
+					equality: 11
 				});
 			}
 		}
