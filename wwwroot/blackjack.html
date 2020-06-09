@@ -1,43 +1,89 @@
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<link rel="stylesheet" type="text/css" href="blackjack.css">
 </head>
 <body>
-	<div id="main">
-		<div id="header"></div>
-		<div id="dealer">
-			<div class="hp"><span>20</span><span>20</span></div>
-			<div class="name">Dealer</div>
-			<div class="cards">
+	<div class="grid-container">
+		<div><h1>Blackjack</h1></div>
+		<div>Enemy Stats</div>
+		<div class="grid-misc">
+			<div>Enemy</br>Ability</div>
+			<div id="dealer" class="grid-char">
+				<div>Enemy</div>
+				<div class="grid-cards">
+					<!--div class="dealcard facedown" onclick="this.classList.remove('dealcard'); this.classList.remove('facedown'); this.classList.add('faceup')"><span data-suite="1"></span>1</div>
+					<div class="dealcard"><span data-suite="2"></span>2</div>
+					<div class="dealcard"><span data-suite="3"></span>3</div>
+					<div class="dealcard"><span data-suite="4"></span>4</div>
+					<div class="fadeIn"></div-->
+				</div>
 			</div>
-			<div class="sum"></div>
+			<div class="grid-energy">
+				<div></div>
+				<div><span data-suite="1"></span>: 0/10</div>
+				<div><span data-suite="2"></span>: 0/10</div>
+				<div><span data-suite="3"></span>: 0/10</div>
+				<div><span data-suite="4"></span>: 0/10</div>
+				<div></div>
+			</div>
 		</div>
-		<div id="chars">
-			<div id="char2">
-				<div class="name">Player 1</div>
-				<div class="cards"></div>
-				<div class="sum"></div>
+		<div class="grid-chars">
+			<div></div>
+			<div id="char1" class="grid-char">
+				<div>Char 1</div>
+				<div class="grid-cards">
+					<!--div><span data-suite="1"></span>1</div>
+					<div><span data-suite="2"></span>2</div>
+					<div><span data-suite="3"></span>3</div>
+					<div><span data-suite="4"></span>4</div>
+					<div><span data-suite="1"></span>5</div>
+					<div><span data-suite="2"></span>6</div>
+					<div><span data-suite="3"></span>7</div>
+					<div><span data-suite="4"></span>8</div>
+					<div><span data-suite="4"></span>9</div-->
+				</div>
 			</div>
-			<div id="char1">
-				<div class="name">Player 2</div>
-				<div class="cards"></div>
-				<div class="sum"></div>
+			<div></div>
+			<div id="char2" class="grid-char">
+				<div>Char 2</div>
+				<div class="grid-cards">
+					<!--div><span data-suite="3"></span>3</div>
+					<div><span data-suite="4"></span>4</div-->
+				</div>
 			</div>
-			<div class="hp"><span>20</span><span>20</span></div>
 		</div>
-		<div id="inputs">
-			<div class="start">
-				<input id="switch" type="button" value="Switch" />
-				<input id="continue" type="button" value="Continue" />
+		<div>Player Stats</div>
+		<div class="grid-inputs">
+			<div class="grid-inputs-start">
+				<div></div>
+				<div></div>
+				<div><input id="switch" type="button" value="Switch"></div>
+				<div><input id="continue" type="button" value="Continue"></div>
 			</div>
-			<div class="turn">
-				<input id="hit" type="button" value="Hit" />
-				<input id="stay" type="button" value="Stay" />
+			<div class="grid-inputs-char">
+				<div class="grid-inputs-char-actions">
+					<div><input id="hit" type="button" value="Hit"></div>
+					<div><input id="stay" type="button" value="Stay"></div>
+				</div>
+				<div class="grid-inputs-char-abilities">
+					<div>x1</div>
+					<div>x1</div>
+					<div>x1</div>
+					<div>x1</div>
+					<div><input id="ability1" type="button" value="Ability 1"></div>
+					<div><input id="ability2" type="button" value="Ability 2"></div>
+					<div><input id="ability3" type="button" value="Ability 3"></div>
+					<div><input id="ability4" type="button" value="Ability 4"></div>
+				</div>
 			</div>
-			<div class="end">
-				<input id="deal" type="button" value="Deal" />
+			<div class="grid-inputs-dealer">
 			</div>
-		<div>
+			<div class="grid-inputs-end">
+				<div></div>
+				<div><input id="deal" type="button" value="Deal"></div>
+			</div>
+		</div>
 	</div>
 	<script src="blackjack.js"></script>
 </body>

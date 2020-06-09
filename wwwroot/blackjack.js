@@ -2,11 +2,9 @@
 // Object.seal()
 // Object.freeze()
 
-(function (win) {
+(async function blackjackAync(win) {
 	'strict';
-		
-	const NumNames = Object.freeze(['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']);
-
+	
 	const State = Object.freeze({
 		None: 0,
 		Start: 1,
@@ -18,107 +16,103 @@
 	
 	const self = {
 		deck: createDeck(),
-		main: win.document.querySelector('#main'),
-		dealer: {
-			name: 'Dealer',
-			hp: 20,
-			maxHp: 20,
-			hand: {
-				cards: [],
-				nameEl: win.document.querySelector('#dealer > .name'),
-				el: win.document.querySelector('#dealer > .cards'),
-				sum: win.document.querySelector('#dealer > .sum')
-			}
-		},
-		player: {
-			hp: 10,
-			maxHp: 10,
-		},
-		char1: {
-			name: 'Player 1',
-			hand: {
-				cards: [],
-				nameEl: win.document.querySelector('#char1 > .name'),
-				el: win.document.querySelector('#char1 > .cards'),
-				sum: win.document.querySelector('#char1 > .sum')
-			}
-		},
-		char2: {
-			name: 'Player 2',
-			hand: {
-				cards: [],
-				nameEl: win.document.querySelector('#char2 > .name'),
-				el: win.document.querySelector('#char2 > .cards'),
-				sum: win.document.querySelector('#char2 > .sum')
-			}
-		},
+		container: win.document.querySelector('.grid-container'),
+		dealer: createChar('#dealer'),
+		char1: createChar('#char1'),
+		char2: createChar('#char2'),
 		state: State.None,
 	};
 	
-	init();
+	await initAsync();
 	
 	return self;
 	
-	function init() {
-		win.document.querySelector('#switch').onclick = onSwitch;
-		win.document.querySelector('#continue').onclick = onContinue;
-		
-		win.document.querySelector('#hit').onclick = onHit;
-		win.document.querySelector('#stay').onclick = onStay;
-		
+	async function initAsync() {
+		win.document.querySelector('#switch').onclick = onSwitchAsync;
+		win.document.querySelector('#continue').onclick = onContinueAsync;
+		win.document.querySelector('#hit').onclick = onHitAsync;
+		win.document.querySelector('#stay').onclick = onStayAsync;
 		win.document.querySelector('#deal').onclick = onDeal;
-		
-		advanceTurn();
+		await advanceTurnAsync();
 	}
 	
-	function onSwitch() {
-		console.log('onSwitch');
+	function animateAsync(el, cls) {
+		return new Promise(resolve => {
+			el.classList.add(cls);
+			el.addEventListener('animationend', onAnimationEnd);
+			
+			function onAnimationEnd() {
+				el.classList.remove(cls);
+				el.removeEventListener('animationend', onAnimationEnd);
+				resolve();
+			}
+		});
+	}
+	
+	function createChar(id) {
+		return {
+			cards: [],
+			nameEl: win.document.querySelector(id + ' > div:first-child'),
+			cardsEl: win.document.querySelector(id + ' .grid-cards')
+		};
+	}
+	
+	async function onSwitchAsync() {
+		console.log('onSwitchAsync');
 		
-		let c1 = pop(self.char1.hand);
-		let c2 = pop(self.char2.hand);
+		let p1 = popAsync(self.char1, 'switch-out-right');
+		let p2 = popAsync(self.char2, 'switch-out-left');
 		
-		dealCard(self.char1.hand, c2.hide, c2.card);
-		dealCard(self.char2.hand, c1.hide, c1.card);
+		let c1 = await p1;
+		let c2 = await p2;
 		
-		function pop(hand) {
+		p1 = dealCardAsync(self.char1, c2.hide, c2.card, 'switch-in-right');
+		p2 = dealCardAsync(self.char2, c1.hide, c1.card, 'switch-in-left');
+		
+		await p1;
+		await p2;
+		
+		async function popAsync(hand, animation) {
 			let card = hand.cards.pop();
-			hand.el.removeChild(hand.el.lastChild);
+			let last = hand.cardsEl.querySelector('div:last-child');
+			if (last) {
+				await animateAsync(last, animation);
+				hand.cardsEl.removeChild(last);	
+			}
 			return card;
 		}
 	}
 	
-	function onContinue() {
-		console.log('onContinue');
-		advanceTurn();
+	async function onContinueAsync() {
+		console.log('onContinueAsync');
+		await advanceTurnAsync();
 	}
 	
-	function onHit() {
+	async function onHitAsync() {
 		console.log('onHit');
 		
 		switch(self.state) {
 			case State.Char1:
-				hit(self.char1);
+				await hitAsync(self.char1);
 				break;
 				
 			case State.Char2:
-				hit(self.char2);
+				await hitAsync(self.char2);
 				break;
 			
 			default:
 				throw 'Invalid State';
 		}
 		
-		function hit(c) {
-			let total = dealCard(c.hand);
-			if (total >= 21) {
-				advanceTurn();
-			}
+		async function hitAsync(hand) {
+			let sum = await dealCardAsync(hand);
+			await tryAutoAdvanceTurnAsync(hand, sum);
 		}
 	}
 	
-	function onStay() {
-		console.log('onStay');
-		advanceTurn();
+	async function onStayAsync() {
+		console.log('onStayAsync');
+		await advanceTurnAsync();
 	}
 	
 	function onDeal() {
@@ -126,39 +120,41 @@
 		win.location.reload();
 	}
 	
-	function advanceTurn() {
+	async function advanceTurnAsync() {
 		switch(self.state) {
 			case State.None:
-				self.main.classList.add('state-start');
+				await dealAllAsync();
+				self.container.classList.add('state-start');
 				self.state = State.Start;
-				dealAll();
-				tryAutoAdvanceSwitch();
+				await tryAutoAdvanceSwitchAsync();
 				break;
 				
 			case State.Start:
-				self.main.classList.remove('state-start');
-				self.main.classList.add('state-char1');
+				self.container.classList.remove('state-start');
+				self.container.classList.add('state-char1');
 				self.state = State.Char1;
-				tryAutoAdvanceTurn(self.char1.hand);
+				await tryAutoAdvanceTurnAsync(self.char1);
 				break;
 				
 			case State.Char1:
-				self.main.classList.remove('state-char1');
-				self.main.classList.add('state-char2');
+				await tryRemoveEmptyAsync(self.char1);
+				self.container.classList.remove('state-char1');
+				self.container.classList.add('state-char2');
 				self.state = State.Char2;
-				tryAutoAdvanceTurn(self.char2.hand);
+				await tryAutoAdvanceTurnAsync(self.char2);
 				break;
 				
 			case State.Char2:
-				self.main.classList.remove('state-char2');
-				self.main.classList.add('state-dealer');
+			await tryRemoveEmptyAsync(self.char2);
+				self.container.classList.remove('state-char2');
+				self.container.classList.add('state-dealer');
 				self.state = State.Dealer;
-				dealerTurn();
+				await dealerTurnAsync();
 				break;
 				
 			case State.Dealer:
-				self.main.classList.remove('state-dealer');
-				self.main.classList.add('state-end');
+				self.container.classList.remove('state-dealer');
+				self.container.classList.add('state-end');
 				self.state = State.End;
 				endGame();
 				break;
@@ -167,29 +163,33 @@
 				throw 'Invalid State';
 		}
 	
-		function tryAutoAdvanceSwitch() {
-			if (self.char1.hand.cards[0].card.equality === self.char2.hand.cards[0].card.equality ||
-				self.char1.hand.cards[1].card.equality === self.char2.hand.cards[1].card.equality) {
-				advanceTurn();
+		async function tryAutoAdvanceSwitchAsync() {
+			if (self.char1.cards[0].card.equality === self.char2.cards[0].card.equality ||
+				self.char1.cards[1].card.equality === self.char2.cards[1].card.equality) {
+				await advanceTurnAsync();
 			}
 			
 		}
+	}
 	
-		function tryAutoAdvanceTurn(hand) {
-			let sum = sumHand(hand, true);
-			if (sum >= 20) {
-				advanceTurn();
-			}
+	async function tryAutoAdvanceTurnAsync(hand, sum = 0) {
+		if (sum === 0) {
+			sum = sumHand(hand, true);
+		}
+		if (sum >= 21) {
+			await advanceTurnAsync();
+		} else {
+			await tryAddEmptyAsync(hand);
 		}
 	}
 	
 	function endGame() {
-		let dt = sumHand(self.dealer.hand, true);
-		let ct1 = sumHand(self.char1.hand, true);
-		let ct2 = sumHand(self.char2.hand, true);
+		let dt = sumHand(self.dealer, true);
+		let ct1 = sumHand(self.char1, true);
+		let ct2 = sumHand(self.char2, true);
 		
-		charEndGame(ct1, self.char1.hand.nameEl);
-		charEndGame(ct2, self.char2.hand.nameEl);
+		charEndGame(ct1, self.char1.nameEl);
+		charEndGame(ct2, self.char2.nameEl);
 		
 		function charEndGame(ct, el) {
 			if (ct > 21) {
@@ -208,40 +208,58 @@
 		}
 	}
 		
-	function dealerTurn() {
-		reveal(self.dealer.hand);
+	async function dealerTurnAsync() {
+		await revealAsync(self.dealer);
 	
 		while (true) {
-			let total = sumHand(self.dealer.hand);	
+			let total = sumHand(self.dealer);	
 			if (total >= 17) {
 				break;
 			} 
-			total = dealCard(self.dealer.hand);
+			total = await dealCardAsync(self.dealer);
 		}
 		
-		advanceTurn();
+		await advanceTurnAsync();
 	}
 	
-	function dealAll() {
-		dealCard(self.char1.hand);
-		dealCard(self.char2.hand);
-		dealCard(self.dealer.hand, true);
-		dealCard(self.char1.hand);
-		dealCard(self.char2.hand);
-		dealCard(self.dealer.hand);
+	async function dealAllAsync() {
+		await dealCardAsync(self.char1);
+		await dealCardAsync(self.char2);
+		await dealCardAsync(self.dealer, true);
+		await dealCardAsync(self.char1);
+		await dealCardAsync(self.char2);
+		await dealCardAsync(self.dealer);
 	}
 	
-	function reveal(hand) {
-		let els = hand.el.querySelectorAll(".hidden");
+	async function revealAsync(hand) {
+		let els = hand.cardsEl.querySelectorAll(".facedown");
 		for (let i=0; i<els.length; i++) {
-			els[i].classList.remove('hidden');
+			els[i].classList.remove('facedown');
+			await animateAsync(els[i], 'faceup');
 		}
 		for(let i=0; i<hand.cards.length; i++) {
 			hand.cards[i].hide = false;
 		}
 	}
 	
-	function dealCard(hand, hide, card) {
+	async function tryAddEmptyAsync(hand) {
+		let last = hand.cardsEl.querySelector('div:last-child:empty');
+		if(!last) {
+			let el = createEl('<div>');
+			hand.cardsEl.appendChild(el);
+			await animateAsync(el, 'fade-in');
+		}
+	}
+		
+	async function tryRemoveEmptyAsync(hand) {
+		let last = hand.cardsEl.querySelector('div:last-child:empty');
+		if (last) {
+			await animateAsync(last, 'fade-out');
+			hand.cardsEl.removeChild(last);
+		}
+	}
+	
+	async function dealCardAsync(hand, hide, card, animation = 'deal-card') {
 		if (!card) {
 			card = self.deck.shift();
 		}
@@ -249,9 +267,13 @@
 			card,
 			hide
 		});
-		let hideClass = hide === true ? 'class="hidden"' : '';
-		let cardEl = createEl('<div ' + hideClass + '><span data-suite="' + card.suite + '">' + card.abrv + '</span></div>');
-		hand.el.appendChild(cardEl);
+		
+		await tryRemoveEmptyAsync(hand);
+		
+		let hideClass = hide === true ? 'class="facedown"' : '';
+		let cardEl = createEl('<div ' + hideClass + '><span data-suite="' + card.suite + '"></span>' + card.abrv + '</div>');
+		hand.cardsEl.appendChild(cardEl);
+		await animateAsync(cardEl, animation);
 		
 		return sumHand(hand);
 	}
@@ -275,7 +297,7 @@
 			hand.nameEl.classList.add('bust');
 		}
 		
-		hand.sum.innerText = txt;
+		console.log(txt);
 		return total;
 		
 		function sumHandWithVisiblity(showAll) {
@@ -312,11 +334,10 @@
 	function createDeck() {
 		let a = [];
 		for (let d = 1; d < 5; d++) {
-			for (let s = 1; s < 4; s++) {
+			for (let s = 1; s < 5; s++) {
 				for (let c = 1; c < 11; c++) {
 					a.push({
 						suite: s,
-						name: NumNames[c],
 						abrv: c.toString(),
 						value: c,
 						equality: c
@@ -324,28 +345,24 @@
 				}
 				a.push({
 					suite: s,
-					name: 'Jack',
 					abrv: 'J',
 					value: 10,
 					equality: 10
 				});
 				a.push({
 					suite: s,
-					name: 'Queen',
 					abrv: 'Q',
 					value: 10,
 					equality: 10
 				});
 				a.push({
 					suite: s,
-					name: 'King',
 					abrv: 'K',
 					value: 10,
 					equality: 10
 				});
 				a.push({
 					suite: s,
-					name: 'Ace',
 					abrv: 'A',
 					value: 1,
 					equality: 11

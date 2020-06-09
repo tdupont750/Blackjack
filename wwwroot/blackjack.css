@@ -1,150 +1,232 @@
-#main {
-	width: 100%;
-	height: 100%;
-	font-size: 4em;
+body { margin: 0px; }
+input { height: 90%; width: 90%; font-size: 1em; }
+div { border: 0px solid black; }
+
+[class^="grid-"] { height: 100%; display: grid; }
+[class^="grid-"] > div:not([class^="grid-"]) { 
+	display: flex; 
+	justify-content: center; 
+	align-items: center; 
 }
 
-#header {
-	height: 20%;
+.grid-container { 
+	grid-template-columns: 100%; 
+	grid-template-rows: 10% 5% 25% 25% 5% 30%; 
+}
+.grid-misc {
+	grid-template-columns: 30% 40% 30%;
+	grid-template-rows: 100%;
+}
+.grid-char {
+	grid-template-columns: 100%; 
+	grid-template-rows: 30% 70%;
+}
+.grid-energy {
+	grid-template-columns: 100%; 
+	grid-template-rows: 10% 20% 20% 20% 20% 10%;
 }
 
-#dealer,
-#chars {
-	height: 30%;	
+.grid-chars {
+	grid-template-columns: 5% 40% 10% 40% 5%;
+	grid-template-rows: 100%;
+}
+.grid-inputs {
+	grid-template-columns: 100%; 
+	grid-template-rows: 100%;
+}
+.grid-inputs-start {
+	grid-template-columns: 50% 50%;
+	grid-template-rows: 40% 20% 40%;
+}
+.grid-inputs-char {
+	grid-template-columns: 100%;
+	grid-template-rows: 20% 80%;
+}
+.grid-inputs-char-actions {
+	grid-template-columns: 50% 50%;
+	grid-template-rows: 100%;
+}
+.grid-inputs-char-abilities {
+	display: none;
+	grid-template-columns: 25% 25% 25% 25%; 
+	grid-template-rows: 20% 80%;
+}
+.grid-inputs-char-abilities > div:nth-child(-n+4) {
+	align-items: flex-end;
+}
+.grid-inputs-end {
+	grid-template-columns: 100%;
+	grid-template-rows: 40% 20% 40%;
+}
+
+/* ------------ INPUT STATES ------------ */
+
+.grid-inputs > div { display: none; }
+.state-start  .grid-inputs > div.grid-inputs-start,
+.state-char1  .grid-inputs > div.grid-inputs-char,
+.state-char2  .grid-inputs > div.grid-inputs-char,
+.state-dealer .grid-inputs > div.grid-inputs-dealer,
+.state-end    .grid-inputs > div.grid-inputs-end { display: grid; }
+
+/* ------------ SWITCH STATES ------------ */
+
+.state-start .grid-chars .grid-cards > div:nth-child(2) { background-color: yellow; }
+.grid-cards > div.switch-out-right {
+	animation-name: switchOutRight;
+	animation-duration: .2s;
+}
+@keyframes switchOutRight {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to { opacity: 0; transform: translate3d(175%, 0, 0); }
+}
+.grid-cards > div.switch-in-right {
+	animation-name: switchInRight;
+	animation-duration: .2s;
+}
+@keyframes switchInRight {
+  from { opacity: 0; transform: translate3d(175%, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.grid-cards > div.switch-out-left {
+	animation-name: switchOutLeft;
+	animation-duration: .2s;
+}
+@keyframes switchOutLeft {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to { opacity: 0; transform: translate3d(-175%, 0, 0); }
+}
+.grid-cards > div.switch-in-left {
+	animation-name: switchInLeft;
+	animation-duration: .2s;
+}
+@keyframes switchInLeft {
+  from { opacity: 0; transform: translate3d(-175%, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* ------------ RESULTS ------------ */
+
+.bust { background-color: darkred; color: white; }
+.win { background-color: lightgreen; }
+.push { background-color: lightgray; }
+.lose { background-color: red; }
+
+/* ------------ SUITES ------------ */
+
+span[data-suite]:before { margin-right: 4px; }
+span[data-suite="1"]:before { content: '\2665'; color: orangered; }
+span[data-suite="2"]:before { content: '\2666'; color: purple; }
+span[data-suite="3"]:before { content: '\2660'; color: blue; }
+span[data-suite="4"]:before { content: '\2663'; color: green; }
+
+/* ------------ CARDS ------------ */
+
+.grid-cards {
+	grid-template-columns: 33% 33% 33%; 
+	grid-template-rows: 50% 50%;
+}
+.grid-cards.small {
+	grid-template-columns: 25% 25% 25% 25%; 
+	grid-template-rows: 33% 33% 33%; 
+}
+.grid-cards > div:last-child:empty {
+	border-style: dashed;
+	border-color: grey;
+	background-color: yellow;	
+}
+.grid-cards > div {
+	width: 80%;
+	height: 90%;
+	border: 1px solid black;
 	margin: auto;
 }
-
-#dealer,
-#chars > div {
-	width: 50%;
+.grid-cards > div > span[data-suite] {
+	width: 0px;
+    position: relative;
+    bottom: 33%;
+    right: 33%;
+}
+.grid-cards > div.deal-card {
+	animation-name: dealcard;
+	animation-duration: .2s;
+}
+@keyframes dealcard {
+  from { opacity: 0; transform: translate3d(0, -50%, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-#chars .hp {
-	text-align: center;
-	width: 100%;
+/* ------------ FACEEDOWN AND FACEUP ------------ */
+
+.grid-cards > .facedown {
+	font-size: 0;
+	background-color: lightgrey;
+}
+.grid-cards > .faceup { 
+	animation: faceup; 
+	animation-duration: .4s;
+}
+@keyframes faceup {
+  from {
+    transform: perspective(400px);
+	font-size: 0;
+	background-color: lightgrey;
+  }
+  
+  50% {
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+	font-size: 0;
+	background-color: lightgrey;
+  }
+  
+  51% {
+    transform: perspective(400px) rotate3d(0, 1, 0, 90deg);
+	font-size: 1em;
+	background-color: initial;
+  }
+
+  to {
+    transform: perspective(400px);
+  }
 }
 
-#char2 {
-	float: right;
+/* ------------ FADEIN ------------ */
+
+.fade-in {
+  animation-duration: .2s;
+  animation-name: fadeIn;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/*.name:before {
-	content: "Name: ";
-}*/
+/* ------------ FADEOUT ------------ */
 
-.hp:before {
-	content: "HP: ";
+.fade-out {
+  animation-duration: .2s;
+  animation-name: fadeOut;
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
-.hp > span:last-child:before {
-	content: " / ";
+/* ------------ PULSE ------------ */
+
+@keyframes pulse {
+  from {
+    transform: scale3d(1, 1, 1);
+  }
+
+  50% {
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+
+  to {
+    transform: scale3d(1, 1, 1);
+  }
 }
-
-.hp,
-.sum {
-	display: none;
-}
-
-.sum:before {
-	content: "Sum: ";
-}
-
-#inputs {
-	text-align: center;
-}
-
-input {
-	font-size: 1.5em;
-	width: 40%;
-}
-
-div {
-	border: 0px black solid;
-}
-
-.name.bust {
-	background-color: darkred;
-	color: white;
-}
-
-.name.win {
-	background-color: lightgreen;
-}
-
-.name.push {
-	background-color: lightgray;
-}
-
-.name.lose {
-	background-color: red;
-}
-
-.state-start #chars .cards > div:last-child, 
-.state-char1 #char1 .name,
-.state-char2 #char2 .name {
-	background-color: yellow;
-}
-
-#inputs > div {
-	display: none;
-}
-
-.state-start #inputs > div.start {
-	display: block;
-}
-
-.state-char1 #inputs > div.turn,
-.state-char2 #inputs > div.turn {
-	display: block;
-}
-
-.state-dealer #inputs > div.end,
-.state-end #inputs > div.end {
-	display: block;
-}
-
-.cards {
-	min-height: 225px;
-}
-
-.cards > div {
-	border: 1px black solid;
-	display: inline-block;
-	margin: 5px;
-	height: 100px;
-	width: 100px;
-}
-
-.cards > div.hidden {
-	background-color: lightgray;
-}
-
-.cards > div.hidden > span {
-	visibility: hidden;
-}
-
-/* https://unicodelookup.com/#heart/1 */
-
-.cards > div > span[data-suite="1"]:before {
-	margin: 2px;
-	content: '\2665';
-	color: red;
-}
-
-.cards > div > span[data-suite="2"]:before {
-	margin: 2px;
-	content: '\2666';
-	color: red;
-}
-
-.cards > div > span[data-suite="3"]:before {
-	margin: 2px;
-	content: '\2660';
-	color: black;
-}
-
-.cards > div > span[data-suite="4"]:before {
-	margin: 2px;
-	content: '\2663';
-	color: black;
+.animate__pulse {
+  animation-name: pulse;
+  animation-timing-function: ease-in-out;
 }
