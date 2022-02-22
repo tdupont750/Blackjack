@@ -28,12 +28,44 @@
 	return self;
 	
 	async function initAsync() {
+		restorePersist();
 		win.document.querySelector('#switch').onclick = onSwitchAsync;
 		win.document.querySelector('#continue').onclick = onContinueAsync;
 		win.document.querySelector('#hit').onclick = onHitAsync;
 		win.document.querySelector('#stay').onclick = onStayAsync;
 		win.document.querySelector('#deal').onclick = onDeal;
+		win.document.querySelectorAll('input.minus').forEach(el => el.onclick = onMinus);
+		win.document.querySelectorAll('input.plus').forEach(el => el.onclick = onPlus);
 		await advanceTurnAsync();
+	}
+	
+	function restorePersist() {
+		win.document.querySelectorAll('[id^="persist-"').forEach(el => {
+			var value = win.localStorage.getItem(el.id);
+			var num = Number.parseInt(value);
+			if (!isNaN(num)) {
+				el.innerText = value;
+			}
+		});
+	}
+	
+	function onMinus() {
+		changeValue(this, -1);
+	}
+	
+	function onPlus() {
+		changeValue(this, +1);
+	}
+	
+	function changeValue(el, diff) {
+		var sib = el.parentElement.querySelector('.value');
+		var value = Number.parseInt(sib.innerText) + diff;
+		sib.innerText = value;
+		win.localStorage.setItem(sib.id, value);
+	}
+	
+	function filterSibling(el) {
+		el.parentElement.childNodes.forEach(n => console.log(n))
 	}
 	
 	function animateAsync(el, cls) {
@@ -267,6 +299,11 @@
 			card,
 			hide
 		});
+		
+		if (hand !== self.dealer && animation == 'deal-card') {
+			var suiteEl = win.document.querySelector('#persist-suite-' + card.suite);
+			changeValue(suiteEl, 1);
+		}
 		
 		await tryRemoveEmptyAsync(hand);
 		

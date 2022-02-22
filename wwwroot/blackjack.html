@@ -6,83 +6,49 @@
 <body>
 	<div class="grid-container">
 		<div><h1>Blackjack</h1></div>
-		<div>Enemy Stats</div>
-		<div class="grid-misc">
-			<div>Enemy</br>Ability</div>
+		<div></div>
+		<div class="grid-dealer">
+			<div></div>
 			<div id="dealer" class="grid-char">
-				<div>Enemy</div>
+				<div class="grid-hp"><input class="minus" type="button" value="-"><span id="persist-dealer" class="value">20</span><input class="plus" type="button" value="+"></div>
 				<div class="grid-cards">
-					<!--div class="dealcard facedown" onclick="this.classList.remove('dealcard'); this.classList.remove('facedown'); this.classList.add('faceup')"><span data-suite="1"></span>1</div>
-					<div class="dealcard"><span data-suite="2"></span>2</div>
-					<div class="dealcard"><span data-suite="3"></span>3</div>
-					<div class="dealcard"><span data-suite="4"></span>4</div>
-					<div class="fadeIn"></div-->
 				</div>
 			</div>
+			<div></div>
 			<div class="grid-energy">
-				<div></div>
-				<div><span data-suite="1"></span>: 0/10</div>
-				<div><span data-suite="2"></span>: 0/10</div>
-				<div><span data-suite="3"></span>: 0/10</div>
-				<div><span data-suite="4"></span>: 0/10</div>
-				<div></div>
+				<div id="suite-1" class="grid-energy-suite"><input class="minus" type="button" value="-"><span data-suite="1"></span><span>:</span><span id="persist-suite-1" class="value">0</span><input class="plus" type="button" value="+"></div>
+				<div id="suite-2" class="grid-energy-suite"><input class="minus" type="button" value="-"><span data-suite="2"></span><span>:</span><span id="persist-suite-2" class="value">0</span><input class="plus" type="button" value="+"></div>
+				<div id="suite-3" class="grid-energy-suite"><input class="minus" type="button" value="-"><span data-suite="3"></span><span>:</span><span id="persist-suite-3" class="value">0</span><input class="plus" type="button" value="+"></div>
+				<div id="suite-4" class="grid-energy-suite"><input class="minus" type="button" value="-"><span data-suite="4"></span><span>:</span><span id="persist-suite-4" class="value">0</span><input class="plus" type="button" value="+"></div>
 			</div>
 		</div>
 		<div class="grid-chars">
 			<div></div>
 			<div id="char1" class="grid-char">
-				<div>Char 1</div>
-				<div class="grid-cards">
-					<!--div><span data-suite="1"></span>1</div>
-					<div><span data-suite="2"></span>2</div>
-					<div><span data-suite="3"></span>3</div>
-					<div><span data-suite="4"></span>4</div>
-					<div><span data-suite="1"></span>5</div>
-					<div><span data-suite="2"></span>6</div>
-					<div><span data-suite="3"></span>7</div>
-					<div><span data-suite="4"></span>8</div>
-					<div><span data-suite="4"></span>9</div-->
-				</div>
+				<div class="grid-hp"><input class="minus" type="button" value="-"><span id="persist-char-1" class="value">10</span><input class="plus" type="button" value="+"></div>
+				<div class="grid-cards"></div>
 			</div>
 			<div></div>
 			<div id="char2" class="grid-char">
-				<div>Char 2</div>
-				<div class="grid-cards">
-					<!--div><span data-suite="3"></span>3</div>
-					<div><span data-suite="4"></span>4</div-->
-				</div>
+				<div class="grid-hp"><input class="minus" type="button" value="-"><span id="persist-char-2" class="value">10</span><input class="plus" type="button" value="+"></div>
+				<div class="grid-cards"></div>
 			</div>
 		</div>
-		<div>Player Stats</div>
-		<div class="grid-inputs">
-			<div class="grid-inputs-start">
-				<div></div>
-				<div></div>
-				<div><input id="switch" type="button" value="Switch"></div>
-				<div><input id="continue" type="button" value="Continue"></div>
-			</div>
-			<div class="grid-inputs-char">
-				<div class="grid-inputs-char-actions">
-					<div><input id="hit" type="button" value="Hit"></div>
-					<div><input id="stay" type="button" value="Stay"></div>
-				</div>
-				<div class="grid-inputs-char-abilities">
-					<div>x1</div>
-					<div>x1</div>
-					<div>x1</div>
-					<div>x1</div>
-					<div><input id="ability1" type="button" value="Ability 1"></div>
-					<div><input id="ability2" type="button" value="Ability 2"></div>
-					<div><input id="ability3" type="button" value="Ability 3"></div>
-					<div><input id="ability4" type="button" value="Ability 4"></div>
-				</div>
-			</div>
-			<div class="grid-inputs-dealer">
-			</div>
-			<div class="grid-inputs-end">
-				<div></div>
-				<div><input id="deal" type="button" value="Deal"></div>
-			</div>
+		<div class="grid-inputs-start">
+			<div></div>
+			<div><input id="switch" type="button" value="Switch"></div>
+			<div></div>
+			<div><input id="continue" type="button" value="Continue"></div>
+		</div>
+		<div class="grid-inputs-char">
+			<div></div>
+			<div><input id="hit" type="button" value="Hit"></div>
+			<div></div>
+			<div><input id="stay" type="button" value="Stay"></div>
+		</div>
+		<div class="grid-inputs-end">
+			<div></div>
+			<div><input id="deal" type="button" value="Deal"></div>
 		</div>
 	</div>
 	<script src="blackjack.js"></script>
